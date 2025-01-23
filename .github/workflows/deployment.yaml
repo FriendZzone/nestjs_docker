@@ -27,12 +27,21 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          IMAGE_TAG: ${{ github.sha }}
+      # - name: Build, tag, and push image to Amazon ECR
+      #   id: build-image
+      #   env:
+      #     IMAGE_TAG: ${{ github.sha }}
+      #   run: |
+      #     aws ecr-public get-login-password --region ${{ secrets.AWS_ECR_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
+      #     docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
+      #     docker tag $AWS_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
+      #     docker push ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
+
+      - name: Download task definition
         run: |
-          aws ecr-public get-login-password --region ${{ secrets.AWS_ECR_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
-          docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
-          docker tag $AWS_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
-          docker push ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
+          aws ecs describe-task-definition --task-definition \ --query taskDefinition > task-definition.json
+
+      - name: Read task-definition.json
+        run: cat task-definition.json
+
+
