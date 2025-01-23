@@ -6,9 +6,7 @@ on:
       - main
 
 env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_REPOSITORY: dev-repo
-  AWS_REGISTRY: ${{ secrets.AWS_ECR }}
   
 jobs:
   deploy:
@@ -34,7 +32,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          aws ecr-public get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_REGISTRY
+          aws ecr-public get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR }}
           docker build -t $AWS_REPOSITORY:$IMAGE_TAG .
-          docker tag $AWS_REPOSITORY:$IMAGE_TAG $AWS_REGISTRY/$AWS_REPOSITORY:latest
-          docker push $AWS_REGISTRY/$AWS_REPOSITORY:latest
+          docker tag $AWS_REPOSITORY:$IMAGE_TAG ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
+          docker push ${{ secrets.AWS_ECR }}/$AWS_REPOSITORY:latest
