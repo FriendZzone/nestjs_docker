@@ -7,6 +7,8 @@ on:
 
 env:
   AWS_REPOSITORY: dev-repo
+  ECS_CLUSTER: dev-cluster
+  ECS_SERVICE: dev-service
   
 jobs:
   deploy:
@@ -61,7 +63,7 @@ jobs:
 
       - name: Force re-deploy
         run: |
-          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region $AWS_REGION --force-new-deployment
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --region ${{secrets.AWS_REGION}} --force-new-deployment
 
 
 
